@@ -16,7 +16,8 @@ import sys
 import time
 
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 from tqdm import trange
 
 import dataset_input
@@ -41,7 +42,7 @@ def evaluate(model, sess, config, summary_writer=None):
                                         seed=config.training.np_random_seed)
     print(poison_method, clean_label, target_label, position, color)
 
-    global_step = tf.contrib.framework.get_or_create_global_step()
+    global_step = tf.train.get_or_create_global_step()
     # Iterate over the samples batch-by-batch
     num_eval_examples = len(dataset.eval_data.xs)
     num_clean_examples = 0
@@ -174,7 +175,7 @@ if __name__ == "__main__":
 
     model_dir = config.model.output_dir
 
-    global_step = tf.contrib.framework.get_or_create_global_step()
+    global_step = tf.train.get_or_create_global_step()
 
     if args.loop:
         eval_dir = os.path.join(model_dir, 'eval')

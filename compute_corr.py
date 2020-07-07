@@ -14,8 +14,9 @@ import sys
 from timeit import default_timer as timer
 
 import numpy as np
-import tensorflow as tf
-import tensorflow.contrib.slim as slim
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
+import tf_slim as slim
 from tqdm import trange
 
 import dataset_input
@@ -37,7 +38,7 @@ def compute_corr(config):
     num_poisoned_left = dataset.num_poisoned_left
     print('Num poisoned left: ', num_poisoned_left)
     num_training_examples = len(dataset.train_data.xs)
-    global_step = tf.contrib.framework.get_or_create_global_step()
+    global_step = tf.train.get_or_create_global_step()
     model = resnet.Model(config.model)
 
 

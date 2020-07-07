@@ -4,7 +4,7 @@ from __future__ import division
 from __future__ import print_function
 
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 
 class Model(object):
   """ResNet model."""
@@ -30,9 +30,9 @@ class Model(object):
       self.y_input = tf.placeholder(tf.int64, shape=None)
 
       self.is_training = tf.placeholder(tf.bool)
-      padded = tf.map_fn(lambda img: tf.image.resize_image_with_crop_or_pad(
+      padded = tf.map_fn(lambda img: tf.image.resize_with_crop_or_pad(
         img, 32 + 4, 32 + 4), self.x_input)
-      cropped = tf.map_fn(lambda img: tf.random_crop(img, 
+      cropped = tf.map_fn(lambda img: tf.image.random_crop(img,
         [32, 32, 3]), padded)
       flipped = tf.map_fn(lambda img: tf.image.random_flip_left_right(img),
          cropped)
@@ -99,14 +99,13 @@ class Model(object):
   def _batch_norm(self, name, x):
     """Batch normalization."""
     with tf.name_scope(name):
-      return tf.contrib.layers.batch_norm(
-          inputs=x,
-          decay=.9,
-          center=True,
-          scale=True,
-          activation_fn=None,
-          updates_collections=None,
-          is_training=self.is_training)
+      return tf.layers.batch_normalization(
+        inputs=x,
+        training=self.is_training,
+        momentum=.1,
+        center=True,
+        scale=True
+      )
 
   def _residual(self, x, in_filter, out_filter, stride,
                 activate_before_residual=False):

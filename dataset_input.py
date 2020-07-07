@@ -14,7 +14,7 @@ import pickle
 import random
 import os
 import sys
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 version = sys.version_info
 
 import numpy as np

@@ -14,8 +14,9 @@ import sys
 from timeit import default_timer as timer
 
 import numpy as np
-import tensorflow as tf
-import tensorflow.contrib.slim as slim
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
+import tf_slim as slim
 from tqdm import trange
 
 import dataset_input
@@ -51,7 +52,7 @@ def train(config):
     print('Poison Position: {}'.format(config.data.position))
     print('Poison Color: {}'.format(config.data.color))
     num_training_examples = len(dataset.train_data.xs)
-    global_step = tf.contrib.framework.get_or_create_global_step()
+    global_step = tf.train.get_or_create_global_step()
     model = resnet.Model(config.model)
 
     # uncomment to get a list of trainable variables
@@ -69,7 +70,9 @@ def train(config):
     total_loss = model.mean_xent + weight_decay * model.weight_decay_loss
 
     optimizer = tf.train.MomentumOptimizer(learning_rate, momentum)
+    update_ops = tf.compat.v1.get_collection(tf.GraphKeys.UPDATE_OPS)
     train_step = optimizer.minimize( total_loss, global_step=global_step)
+    train_step = tf.group([train_step, update_ops])
 
     # Setting up the Tensorboard and checkpoint outputs
     model_dir = config.model.output_dir
