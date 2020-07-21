@@ -3,10 +3,6 @@ Infinite evaluation loop going through the checkpoints in the model directory
 as they appear and evaluating them. Accuracy and average loss are printed and
 added as tensorboard summaries.
 """
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import argparse
 from datetime import datetime
 import json
